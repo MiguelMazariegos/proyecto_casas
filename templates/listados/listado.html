@@ -1,0 +1,189 @@
+{% extends 'base.html' %} 
+
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+    <section id="showcase-inner" class="py-5 text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-12">
+          <h1 class="display-4">{{listado.titulo}}</h1>
+          <p class="lead">
+            <i class="fas fa-map-marker"></i> {{listado.departamento}}, {{listado.municipio}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Breadcrumb -->
+  <section id="bc" class="mt-3">
+    <div class="container">
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{% url 'index' %}">Inicio</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{% url 'listados' %}">Listados</a>
+          </li>
+          <li class="breadcrumb-item active">{{listado.titulo}}</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  {% include 'partials/_alerts.html' %}
+
+  <!-- Listing -->
+  <section id="listing" class="py-4">
+    <div class="container">
+      <a href="{% url 'listados' %}" class="btn btn-light mb-4">Regresar</a>
+      <div class="row">
+        <div class="col-md-9">
+          <!-- Home Main Image -->
+          <img src="{{ listado.foto.url }}" alt="" class="img-main img-fluid mb-3">
+          <!-- Thumbnails -->
+          <div class="row mb-5 thumbs">
+            {% if listado.foto1 %}
+            <div class="col-md-2">
+              <a href="{{ listado.foto1.url }}" data-lightbox="home-images">
+                <img src="{{ listado.foto1.url }}" alt="" class="img-fluid">
+              </a>
+            {% endif %}
+            </div>
+            {% if listado.foto2 %}
+            <div class="col-md-2">
+              <a href="{{ listado.foto2.url }}" data-lightbox="home-images">
+                <img src="{{ listado.foto2.url }}" alt="" class="img-fluid">
+              </a>
+            </div>
+            {% endif %}
+            {% if listado.foto3 %}
+            <div class="col-md-2">
+              <a href="{{ listado.foto3.url }}" data-lightbox="home-images">
+                <img src="{{ listado.foto3.url }}" alt="" class="img-fluid">
+              </a>
+            </div>
+            {% endif %}
+          </div>
+          <!-- Fields -->
+          <div class="row mb-5 fields">
+            <div class="col-md-6">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-money-bill-alt"></i> Precio:
+                  <span class="float-right">{{listado.precio}}</span>
+                </li>
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-bed"></i> Dormitorios:
+                  <span class="float-right">{{listado.dormitorios}}</span>
+                </li>
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-bath"></i> Baños:
+                  <span class="float-right">{{listado.banios}}</span>
+                </li>
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-car"></i> Garage:
+                  <span class="float-right">{{listado.garage}}
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-th-large"></i> Metros^2:
+                  <span class="float-right">{{listado.mts}}</span>
+                </li>
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-square"></i> Depto:
+                  <span class="float-right">{{listado.departamento}}
+                  </span>
+                </li>
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-calendar"></i> Fecha:
+                  <span class="float-right">{{listado.fecha}}</span>
+                </li>
+                <li class="list-group-item text-secondary">
+                  <i class="fas fa-bed"></i> Vendedor:
+                  <span class="float-right">{{listado.vendedor}}
+                  </span>
+                </li>
+
+
+              </ul>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="row mb-5">
+            <div class="col-md-12">
+              {{ listado.descripcion}}
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card mb-3">
+            <img class="card-img-top" src="{{ listado.vendedor.foto.url }}" alt="Seller of the month">
+            <div class="card-body">
+              <h5 class="card-title">Vendedor de la propiedad</h5>
+              <h6 class="text-secondary">{{listado.vendedor}}</h6>
+            </div>
+          </div>
+          <button class="btn-primary btn-block btn-lg" data-toggle="modal" data-target="#inquiryModal">Haz una consulta</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Inquiry Modal -->
+  <div class="modal fade" id="inquiryModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="inquiryModalLabel">Haz una consulta</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="{% url 'contact' %}" method="POST">
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+              <input type="hidden" name="user_id" value="{{ user.id}}">
+            {% else %}
+              <input type="hidden" name="user_id" value="0">
+            {% endif %}
+            <input type="hidden" name="realtor_email" value="{{ listado.vendedor.email }}">
+            <input type="hidden" name="listing_id" value="{{ listado.id }}">
+            <div class="form-group">
+              <label for="property_name" class="col-form-label">Propiedad:</label>
+              <input type="text" name="listing" class="form-control" value="{{listado.titulo}}">
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-form-label">Nombre:</label>
+              <input type="text" name="name" class="form-control" {% if user.is_authenticated %}
+               value="{{ user.first_name }} {{ user.last_name }}" {% endif %} required>
+            </div>
+            <div class="form-group">
+              <label for="email" class="col-form-label">Email:</label>
+              <input type="email" name="email" class="form-control" {% if user.is_authenticated %}
+              value="{{ user.email }}" {% endif %} required>
+            </div>
+            <div class="form-group">
+              <label for="phone" class="col-form-label">Telefono:</label>
+              <input type="text" name="phone" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="message" class="col-form-label">Mensaje:</label>
+              <textarea name="message" class="form-control"></textarea>
+            </div>
+            <hr>
+            <input type="submit" value="Send" class="btn btn-block btn-secondary">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

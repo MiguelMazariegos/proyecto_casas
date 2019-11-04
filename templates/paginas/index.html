@@ -1,0 +1,157 @@
+{% extends 'base.html' %} 
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<!-- Showcase -->
+  <section id="showcase">
+    <div class="container text-center">
+      <div class="home-search p-5">
+        <div class="overlay p-5">
+          <h1 class="display-4 mb-4">
+            La forma más fácil de buscar propiedades
+          </h1>
+          <p class="lead">Ingresa los criterios de búsqueda y pulsa el boton de búsqueda!</p>
+          <div class="search">
+            <form action="{% url 'buscar' %}">
+              <!-- Form Row 1 -->
+              <div class="form-row">
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">Keywords</label>
+                  <input type="text" name="keywords" class="form-control" placeholder="Keyword (Piscina, garage, etc)">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">Ciudad</label>
+                  <input type="text" name="city" class="form-control" placeholder="City">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">Departamentos</label>
+                  <select name="state" class="form-control">
+                    <option selected="true" disabled="disabled">Departamento</option>
+                    {% for k,value in op_dep.items %}
+                      <option value="{{ k }}">{{value}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <!-- Form Row 2 -->
+              <div class="form-row">
+                <div class="col-md-6 mb-3">
+                  <label class="sr-only">Dormitorios</label>
+                  <select name="bedrooms" class="form-control">
+                    <option selected="true" disabled="disabled">Dormitorios (Todos)</option>
+                    {% for k,value in op_cuar.items %}
+                      <option value="{{ k }}">{{value}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <select name="price" class="form-control" id="type">
+                    <option selected="true" disabled="disabled">Precio Max (Cualquiera)</option>
+                    {% for k,value in op_pre.items %}
+                      <option value="{{ k }}">{{value}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-block mt-4" type="submit">Buscar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+  {% include 'partials/_alerts.html' %}
+  
+  <!-- Listings -->
+  <section id="listings" class{% load humanize %}="py-5">
+    <div class="container">
+      <h3 class="text-center mb-3">Últimas ofertas</h3>
+      <div class="row">
+      {% if listados %}
+          {% for listado in listados %}
+            <!-- Listing 1 -->
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card listing-preview">
+                <img class="card-img-top" src="{{ listado.foto.url }}" alt="">
+                <div class="card-img-overlay">
+                  <h2>
+                    <span class="badge badge-secondary text-white">Q {{ listado.precio | intcomma }}</span>
+                  </h2>
+                </div>
+                <div class="card-body">
+                  <div class="listing-heading text-center">
+                    <h4 class="text-primary">{{ listado.titulo }}</h4>
+                    <p>
+                      <i class="fas fa-map-marker text-secondary"></i> {{ listado.departamento }}, {{ listado.municipio }}</p>
+                    <p>
+                      <i class="fas fa-map-marker text-secondary"></i> {{ listado.direccion }}</p>
+                  </div>
+                  <hr>
+                  <div class="row py-2 text-secondary">
+                    <div class="col-6">
+                      <i class="fas fa-th-large"></i> Mts2: {{ listado.mts }}</div>
+                    <div class="col-6">
+                      <i class="fas fa-car"></i> Garage: {{ listado.garage }}</div>
+                  </div>
+                  <div class="row py-2 text-secondary">
+                    <div class="col-6">
+                      <i class="fas fa-bed"></i> Dormitorios: {{ listado.dormitorios }}</div>
+                    <div class="col-6">
+                      <i class="fas fa-bath"></i> Baños: {{ listado.banios }}</div>
+                  </div>
+                  <hr>
+                  <div class="row py-2 text-secondary">
+                    <div class="col-6">
+                      <i class="fas fa-user"></i> {{ listado.vendedor }}</div>
+                  </div>
+                  <div class="row text-secondary pb-2">
+                    <div class="col-6">
+                      <i class="fas fa-clock"></i> {{ listado.fecha | timesince }}</div>
+                  </div>
+                  <hr>
+                  <a href="{% url 'listing' listado.id %}" class="btn btn-primary btn-block">Más información</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+      {% else %}
+        <div class="col-md-12">
+          <p>No se tienen resultados</p>
+        </div>
+      {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="py-5 bg-secondary text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-4">
+          <i class="fas fa-comment fa-4x mr-4"></i>
+          <hr>
+          <h3>Consulting Services</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-home fa-4x mr-4"></i>
+          <hr>
+          <h3>Propery Management</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-suitcase fa-4x mr-4"></i>
+          <hr>
+          <h3>Renting & Selling</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
